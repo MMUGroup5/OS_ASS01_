@@ -1,0 +1,119 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table,
+th,
+td {
+    border: 1px solid black;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: center;
+}
+
+.gantt {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid black;
+    display: flex;
+    gap: 5px;
+}
+
+.gantt div {
+    padding: 10px;
+    background: #ddd;
+    border: 1px solid #aaa;
+    text-align: center;
+}
+
+header {
+    background-color: #C9CC3F;
+    color: white;
+    up: 0%;
+    text-align: center;
+}
+
+.form-container,
+.results-container {
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+form label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #555;
+}
+
+form input,
+form select,
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #C9CC3F;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #C9CC3F;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ddd;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+footer {
+    text-align: center;
+    background-color: #C9CC3F;
+
+    color: white;
+    position: fixed;
+    /* bottom: 0; */
+    width: 95%;
+}
