@@ -7,3 +7,4 @@ This project simulates CPU scheduling algorithms in an operating system using HT
 
 The system is developed with a responsive, user-friendly interface that allows users to input process data, select the scheduling algorithm, and view the results instantly. The data is processed using JavaScript, and dynamic results are rendered on the page without the need for reloading.
 <hr>
+myra
