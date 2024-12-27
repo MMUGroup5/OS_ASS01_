@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group_03</title>
+    <link rel="stylesheet" href="styles01.css">
+    <script src="javascript01.js" defer></script>
+    
+</head>
+
+<body>
+    <header>
+        <h1>CPU Scheduling</h1>
+    </header>
+
+    <div class="container">
+        <h2>Process Details</h2>
+
+        <label for="algorithm">Select Scheduling Algorithm:</label>
+        <select id="algorithm" onchange="toggleQuantumInput()">
+            <option value="roundRobin">Round Robin</option>
+            <option value="srt">Shortest Remaining Time (SRT)</option>
+            <option value="sjn">Shortest Job Next (SJN)</option>
+            <option value="priority">Non-Preemptive Priority</option>
+        </select>
+
+        <label for="quantum">Time Quantum:</label>
+        <input type="number" id="quantum" value="3" min="1">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Process ID</th>
+                    <th>Arrival Time</th>
+                    <th>Burst Time</th>
+                    <th>Priority</th>
+                </tr>
+            </thead>
+            <tbody id="processTable">
+                <!-- Process rows will be added dynamically -->
+            </tbody>
+        </table>
+        <button onclick="addProcess()">Add Process</button>
+        <button onclick="runScheduling()">Run Scheduling</button>
+
+        <h2>Gantt Chart</h2>
+        <div class="gantt" id="ganttChart"></div>
+
+        <h2>Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Process ID</th>
+                    <th>Completion Time</th>
+                    <th>Turnaround Time</th>
+                    <th>Waiting Time</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTable">
+                <!-- Results will be added dynamically -->
+            </tbody>
+        </table>
+        <p id="averages"></p>
+    </div>
+
+    <footer>
+        <p>© MYRA | KAH YONG | YI THUNG | BELINDA</p>
+    </footer>
+
+</body>
+
+</html>
