@@ -128,24 +128,65 @@ function runRoundRobin(preparedProcesses, quantum) {
 
 
 function runSRT(preparedProcesses) {
-    let currentTime = 0;
-    let ganttChart = [];
+    let currentTime = 0; // Current simulation time
+    let completed = 0; // Number of completed processes
+    let readyQueue = []; // Processes ready for execution
+    let ganttChart = []; // Gantt Chart data
 
-    while (true) {
-        preparedProcesses.sort((a, b) => (a.remainingTime - b.remainingTime)); // Sort by remaining time
-        const process = preparedProcesses.find(p => p.arrivalTime <= currentTime && p.remainingTime > 0);
-        if (!process) break;
+    // Sort processes by arrival time initially
+    preparedProcesses.sort((a, b) => a.arrivalTime - b.arrivalTime);
 
-        const execTime = process.remainingTime;
-        ganttChart.push({ pid: process.pid, execTime });
+    while (completed < preparedProcesses.length) {
+        // Add processes that have arrived to the ready queue
+        preparedProcesses.forEach(p => {
+            if (p.arrivalTime <= currentTime && !readyQueue.includes(p) && p.remainingTime > 0) {
+                readyQueue.push(p);
+            }
+        });
+
+        // If no processes are ready, increment time and continue
+        if (readyQueue.length === 0) {
+            currentTime++;
+            continue;
+        }
+
+        // Find the process with the shortest remaining time in the ready queue
+        readyQueue.sort((a, b) => a.remainingTime - b.remainingTime);
+        let process = readyQueue[0]; // Process with shortest remaining time
+
+        // Determine how long to execute this process
+        let execTime = process.remainingTime;
+        if (preparedProcesses.some(p => p.arrivalTime > currentTime && p.arrivalTime < currentTime + process.remainingTime)) {
+            // Check if a new process arrives before this process can finish
+            let nextArrival = preparedProcesses
+                .filter(p => p.arrivalTime > currentTime)
+                .sort((a, b) => a.arrivalTime - b.arrivalTime)[0];
+            execTime = nextArrival.arrivalTime - currentTime;
+        }
+
+        // Execute the process for the determined time slice
+        ganttChart.push({
+            pid: process.pid,
+            execTime,
+            startTime: currentTime,
+            endTime: currentTime + execTime,
+        });
+
+        // Update process metrics
         currentTime += execTime;
-        process.remainingTime = 0;
+        process.remainingTime -= execTime;
 
-        process.completionTime = currentTime;
-        process.turnaroundTime = process.completionTime - process.arrivalTime;
-        process.waitingTime = process.turnaroundTime - process.burstTime;
+        if (process.remainingTime === 0) {
+            // If the process is completed, calculate metrics and remove it from the ready queue
+            process.completionTime = currentTime;
+            process.turnaroundTime = process.completionTime - process.arrivalTime;
+            process.waitingTime = process.turnaroundTime - process.burstTime;
+            readyQueue.shift(); // Remove the process from the ready queue
+            completed++;
+        }
     }
 
+    // Display the results
     displayResults(preparedProcesses, ganttChart);
 }
 
