@@ -190,27 +190,64 @@ function runSRT(preparedProcesses) {
     displayResults(preparedProcesses, ganttChart);
 }
 
-function runSJN(preparedProcesses) {
-    let currentTime = 0;
-    let ganttChart = [];
+function runSjn(preparedProcesses) {
+    let currentTime = 0; // Current simulation time
+    let completed = 0; // Number of completed processes
+    let ganttChart = []; // Gantt Chart data
+    let readyQueue = []; // Processes ready for execution
 
-    while (true) {
-        preparedProcesses.sort((a, b) => (a.burstTime - b.burstTime)); // Sort by burst time
-        const process = preparedProcesses.find(p => p.arrivalTime <= currentTime && p.remainingTime > 0);
-        if (!process) break;
+    // Sort the processes by arrival time initially
+    preparedProcesses.sort((a, b) => a.arrivalTime - b.arrivalTime);
 
-        const execTime = process.burstTime;
-        ganttChart.push({ pid: process.pid, execTime });
+    while (completed < preparedProcesses.length) {
+        // Add processes that have arrived to the ready queue
+        preparedProcesses.forEach(p => {
+            if (p.arrivalTime <= currentTime && !readyQueue.includes(p) && p.remainingTime > 0) {
+                readyQueue.push(p);
+            }
+        });
+
+        // If no processes are ready, increment time and continue
+        if (readyQueue.length === 0) {
+            currentTime++;
+            continue;
+        }
+
+        // Find the process with the shortest remaining time in the ready queue
+        readyQueue.sort((a, b) => a.remainingTime - b.remainingTime);
+        let process = readyQueue[0]; // Process with shortest remaining time
+
+        // Execute the process for its remaining burst time
+        let execTime = process.remainingTime;
+
+        // Log the execution in the Gantt Chart
+        ganttChart.push({
+            pid: process.pid,
+            execTime,
+            startTime: currentTime,
+            endTime: currentTime + execTime,
+        });
+
+        // Update process metrics
         currentTime += execTime;
-        process.remainingTime = 0;
+        process.remainingTime -= execTime;
 
-        process.completionTime = currentTime;
-        process.turnaroundTime = process.completionTime - process.arrivalTime;
-        process.waitingTime = process.turnaroundTime - process.burstTime;
+        if (process.remainingTime === 0) {
+            // If the process is completed, calculate metrics
+            process.completionTime = currentTime;
+            process.turnaroundTime = process.completionTime - process.arrivalTime;
+            process.waitingTime = process.turnaroundTime - process.burstTime;
+            completed++;
+        }
+        
+        // Remove completed process from readyQueue
+        readyQueue = readyQueue.filter(p => p.remainingTime > 0);
     }
 
+    // Display results
     displayResults(preparedProcesses, ganttChart);
 }
+
 
 function runPriority(preparedProcesses) {
     let currentTime = 0;
