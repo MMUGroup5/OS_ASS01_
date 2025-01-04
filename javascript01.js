@@ -127,7 +127,7 @@ function runRoundRobin(preparedProcesses, quantum) {
 }
 
 
-function runSRT(preparedProcesses) {
+function runSrt(preparedProcesses) {
     let currentTime = 0; // Current simulation time
     let completed = 0; // Number of completed processes
     let readyQueue = []; // Processes ready for execution
