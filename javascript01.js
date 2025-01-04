@@ -77,52 +77,60 @@ function runScheduling() {
 }
 
 function runRoundRobin(preparedProcesses, quantum) {
-    let currentTime = 0; // Initialize the current time
-    let queue = []; // Initialize the process queue
-    let ganttChart = []; // Initialize the Gantt Chart representation
-    let remainingProcesses = preparedProcesses.length; // Count of processes yet to finish
-
-    // Loop until all processes are completed
-    while (remainingProcesses > 0) {
-        // Add all processes that have arrived by the current time to the queue
-        preparedProcesses.forEach(p => {
+    let currentTime = 0;
+    let queue = [];
+    let ganttChart = [];
+    let remainingProcesses = [...preparedProcesses];  // Create a copy to track unfinished processes
+    
+    while (remainingProcesses.some(p => p.remainingTime > 0)) {
+        // Add newly arrived processes to queue
+        remainingProcesses.forEach(p => {
             if (p.arrivalTime <= currentTime && !queue.includes(p) && p.remainingTime > 0) {
                 queue.push(p);
             }
         });
 
-        // If the queue is empty, advance time to the next process's arrival
         if (queue.length === 0) {
             currentTime++;
             continue;
         }
 
-        // Dequeue the next process to execute
-        const process = queue.shift();
-
-        // Calculate the execution time for the process
-        const execTime = Math.min(quantum, process.remainingTime);
-
-        // Update the process's remaining time and the current time
-        process.remainingTime -= execTime;
+        // Get next process from queue
+        let currentProcess = queue.shift();
+        
+        // Calculate execution time for this quantum
+        let execTime = Math.min(quantum, currentProcess.remainingTime);
+        
+        // Update Gantt chart
+        ganttChart.push({
+            pid: currentProcess.pid,
+            execTime: execTime,
+            startTime: currentTime,
+            endTime: currentTime + execTime
+        });
+        
+        // Update process times
         currentTime += execTime;
-
-        // Log the execution in the Gantt Chart
-        ganttChart.push({ pid: process.pid, execTime, startTime: currentTime - execTime, endTime: currentTime });
-
-        // If the process has finished, update its metrics and reduce the count of remaining processes
-        if (process.remainingTime === 0) {
-            process.completionTime = currentTime;
-            process.turnaroundTime = process.completionTime - process.arrivalTime;
-            process.waitingTime = process.turnaroundTime - process.burstTime;
-            remainingProcesses--;
+        currentProcess.remainingTime -= execTime;
+        
+        // If process is complete, calculate its metrics
+        if (currentProcess.remainingTime === 0) {
+            currentProcess.completionTime = currentTime;
+            currentProcess.turnaroundTime = currentProcess.completionTime - currentProcess.arrivalTime;
+            currentProcess.waitingTime = currentProcess.turnaroundTime - currentProcess.burstTime;
         } else {
-            // Re-enqueue the process if it still has burst time left
-            queue.push(process);
+            // If process isn't complete, add it back to queue
+            // But first, check if any new processes have arrived
+            remainingProcesses.forEach(p => {
+                if (p.arrivalTime <= currentTime && !queue.includes(p) && p.remainingTime > 0 && p !== currentProcess) {
+                    queue.push(p);
+                }
+            });
+            queue.push(currentProcess);
         }
     }
 
-    // Display the results
+    // Display results
     displayResults(preparedProcesses, ganttChart);
 }
 
