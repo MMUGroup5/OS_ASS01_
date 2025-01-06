@@ -260,11 +260,12 @@ function runSjn(preparedProcesses) {
 function runPriority(preparedProcesses) {
     let currentTime = 0;
     let completed = 0;
-    const ganttChart = [];
+    let ganttChart = [];
+    let readyQueue = [];
 
     while (completed < preparedProcesses.length) {
         // Filter processes that have arrived and are not yet completed
-        const readyQueue = preparedProcesses.filter(p => p.arrivalTime <= currentTime && p.remainingTime > 0);
+        readyQueue = preparedProcesses.filter(p => p.arrivalTime <= currentTime && p.remainingTime > 0);
 
         if (readyQueue.length === 0) {
             // If no processes are ready, increment time
@@ -276,11 +277,16 @@ function runPriority(preparedProcesses) {
         readyQueue.sort((a, b) => a.priority - b.priority || a.arrivalTime - b.arrivalTime);
 
         // Select the process with the highest priority
-        const process = readyQueue[0];
+        let process = readyQueue[0];
 
         // Execute the process completely
-        const execTime = process.burstTime;
-        ganttChart.push({ pid: process.pid, execTime });
+        let execTime = process.remainingTime;
+        ganttChart.push({ 
+            pid: process.pid, 
+            execTime, 
+            startTime: currentTime, 
+            endTime: currentTime + execTime 
+        });
         currentTime += execTime;
 
         // Update process details
