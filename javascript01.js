@@ -259,23 +259,41 @@ function runSjn(preparedProcesses) {
 
 function runPriority(preparedProcesses) {
     let currentTime = 0;
-    let ganttChart = [];
+    let completed = 0;
+    const ganttChart = [];
 
-    while (true) {
-        preparedProcesses.sort((a, b) => (a.priority - b.priority)); // Sort by priority (ascending)
-        const process = preparedProcesses.find(p => p.arrivalTime <= currentTime && p.remainingTime > 0);
-        if (!process) break;
+    while (completed < preparedProcesses.length) {
+        // Filter processes that have arrived and are not yet completed
+        const readyQueue = preparedProcesses.filter(p => p.arrivalTime <= currentTime && p.remainingTime > 0);
 
+        if (readyQueue.length === 0) {
+            // If no processes are ready, increment time
+            currentTime++;
+            continue;
+        }
+
+        // Sort ready processes by priority (ascending), breaking ties by arrival time
+        readyQueue.sort((a, b) => a.priority - b.priority || a.arrivalTime - b.arrivalTime);
+
+        // Select the process with the highest priority
+        const process = readyQueue[0];
+
+        // Execute the process completely
         const execTime = process.burstTime;
         ganttChart.push({ pid: process.pid, execTime });
         currentTime += execTime;
-        process.remainingTime = 0;
 
+        // Update process details
+        process.remainingTime = 0;
         process.completionTime = currentTime;
         process.turnaroundTime = process.completionTime - process.arrivalTime;
         process.waitingTime = process.turnaroundTime - process.burstTime;
+
+        // Increment the count of completed processes
+        completed++;
     }
 
+    // Display results
     displayResults(preparedProcesses, ganttChart);
 }
 
