@@ -310,22 +310,66 @@ function displayResults(preparedProcesses, ganttChart) {
     // Create a container for the Gantt Chart
     const ganttContainer = document.createElement('div');
     ganttContainer.style.display = 'flex';
-    ganttContainer.style.alignItems = 'center';
+    ganttContainer.style.borderTop = '2px solid black';
+    ganttContainer.style.borderBottom = '2px solid black';
 
     // Generate Gantt Chart UI with labels for burst time
     ganttChart.forEach(block => {
         const div = document.createElement('div');
-        div.innerText = `P${block.pid}(${block.execTime})`;
-        div.style.padding = '10px';
-        div.style.border = '1px solid black';
-        div.style.backgroundColor = '#f0f0f0';
-        div.style.margin = '2px';
-        div.style.textAlign = 'center';
-        div.title = `Start: ${block.startTime}, End: ${block.endTime}, Duration: ${block.execTime}`;
-        ganttDiv.appendChild(div);
+        blockDiv.style.borderLeft = '1px solid black';
+        blockDiv.style.flex = block.execTime; // Proportional width based on execTime
+        blockDiv.style.textAlign = 'center';
+        blockDiv.style.position = 'relative';
+        blockDiv.style.padding = '10px 0';
+        blockDiv.style.fontSize = '14px';
+        blockDiv.style.backgroundColor = '#f0f0f0';
+
+        // Add process label (e.g., P1)
+        const processLabel = document.createElement('span');
+        processLabel.innerText = `P${block.pid}`;
+        processLabel.style.display = 'block';
+        processLabel.style.fontWeight = 'bold';
+        blockDiv.appendChild(processLabel);
+
+        // Add burst time
+        const burstLabel = document.createElement('span');
+        burstLabel.innerText = `${block.execTime}`;
+        burstLabel.style.position = 'absolute';
+        burstLabel.style.bottom = '5px';
+        burstLabel.style.left = '50%';
+        burstLabel.style.transform = 'translateX(-50%)';
+        burstLabel.style.fontSize = '12px';
+        blockDiv.appendChild(burstLabel);
+
+        ganttContainer.appendChild(blockDiv);
     });
 
+    // Add time markers
+    const timeMarkers = document.createElement('div');
+    timeMarkers.style.display = 'flex';
+    timeMarkers.style.marginTop = '5px';
+    timeMarkers.style.fontSize = '12px';
+
+    ganttChart.forEach((block, index) => {
+        // Add start time marker
+        const timeMarker = document.createElement('div');
+        timeMarker.style.flex = block.execTime; // Align with the corresponding block
+        timeMarker.style.textAlign = index === 0 ? 'left' : 'center';
+        timeMarker.innerText = block.startTime;
+        timeMarkers.appendChild(timeMarker);
+
+        // Add the last end time marker
+        if (index === ganttChart.length - 1) {
+            const endTimeMarker = document.createElement('div');
+            endTimeMarker.style.textAlign = 'right';
+            endTimeMarker.innerText = block.endTime;
+            timeMarkers.appendChild(endTimeMarker);
+        }
+    });
+
+    // Append the Gantt chart and time markers to the container
     ganttDiv.appendChild(ganttContainer);
+    ganttDiv.appendChild(timeMarkers);
 
     // Calculate total burst time for each process
     const totalBurstTimes = {};
