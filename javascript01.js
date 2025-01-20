@@ -305,7 +305,7 @@ function runPriority(preparedProcesses) {
 
 function displayResults(preparedProcesses, ganttChart) {
     const ganttDiv = document.getElementById('ganttChart');
-    ganttDiv.innerHTML = '<h3>Gantt Chart</h3>';
+    ganttDiv.innerHTML = ' ';
 
     // Create a container for the Gantt Chart
     const ganttContainer = document.createElement('div');
@@ -333,20 +333,9 @@ function displayResults(preparedProcesses, ganttChart) {
         totalBurstTimes[block.pid] = (totalBurstTimes[block.pid] || 0) + block.execTime;
     });
     
-    // Display total burst times
-    const burstTimesDiv = document.createElement('div');
-    burstTimesDiv.innerHTML = '<h3>Total Burst Times</h3>';
-    for (const pid in totalBurstTimes) {
-        const div = document.createElement('div');
-        div.innerText = `P${pid}: ${totalBurstTimes[pid]} units`;
-        burstTimesDiv.appendChild(div);
-    }
-
-    ganttDiv.appendChild(burstTimesDiv);
-    
     // Generate result table
     const resultsTable = document.getElementById('resultsTable');
-    resultsTable.innerHTML = '<tr><th>Process</th><th>Completion Time</th><th>Turnaround Time</th><th>Waiting Time</th></tr>';
+    resultsTable.innerHTML = ' ';
 
     let totalTAT = 0;
     let totalWT = 0;
