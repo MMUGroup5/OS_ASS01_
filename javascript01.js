@@ -307,8 +307,12 @@ function displayResults(preparedProcesses, ganttChart) {
     const ganttDiv = document.getElementById('ganttChart');
     ganttDiv.innerHTML = ''; // Clear previous Gantt chart
 
-    // Create the Gantt chart blocks
-    ganttChart.forEach((block, index) => {
+    // Create a row for the Gantt chart blocks
+    const blocksRow = document.createElement('div');
+    blocksRow.style.display = 'flex';
+    blocksRow.style.marginBottom = '10px';
+
+    ganttChart.forEach((block) => {
         const processDiv = document.createElement('div');
         processDiv.style.flex = block.execTime; // Relative width based on execution time
         processDiv.style.border = '1px solid black';
@@ -316,32 +320,38 @@ function displayResults(preparedProcesses, ganttChart) {
         processDiv.style.padding = '5px';
         processDiv.style.backgroundColor = '#ddd';
         processDiv.innerHTML = `P${block.pid}`;
-        ganttDiv.appendChild(processDiv);
+        blocksRow.appendChild(processDiv);
     });
 
-    // Add time labels at the bottom of the Gantt chart
-    const timeLabels = document.createElement('div');
-    timeLabels.style.display = 'flex';
-    timeLabels.style.marginTop = '10px';
+    // Add the blocks row to the Gantt chart container
+    ganttDiv.appendChild(blocksRow);
 
-    ganttChart.forEach((block, index) => {
-        const timeDiv = document.createElement('div');
-        timeDiv.style.flex = block.execTime;
-        timeDiv.style.textAlign = index === ganttChart.length - 1 ? 'right' : 'left';
-        timeDiv.style.marginRight = '5px';
-        timeDiv.innerHTML = block.startTime;
+    // Create a row for the time labels
+    const timeLabelsRow = document.createElement('div');
+    timeLabelsRow.style.display = 'flex';
 
-        timeLabels.appendChild(timeDiv);
+    // Add the starting time label (0)
+    let currentTime = 0; // Start from 0
+    ganttChart.forEach((block) => {
+         // Time label for the start of each block
+         const timeDiv = document.createElement('div');
+         timeDiv.style.flex = block.execTime; // Matches the width of the corresponding block
+         timeDiv.style.textAlign = 'left'; // Align left for proper label placement
+         timeDiv.innerHTML = currentTime;
+         timeLabelsRow.appendChild(timeDiv);
+ 
+         // Update current time to the end time of this block
+         currentTime += block.execTime;
+     });
 
-        if (index === ganttChart.length - 1) {
-            const endTimeDiv = document.createElement('div');
-            endTimeDiv.style.textAlign = 'right';
-            endTimeDiv.innerHTML = block.endTime;
-            timeLabels.appendChild(endTimeDiv);
-        }
-    });
+    // Add the last time label (final end time)
+    const endTimeDiv = document.createElement('div');
+    endTimeDiv.style.textAlign = 'right';
+    endTimeDiv.innerHTML = currentTime;
+    timeLabelsRow.appendChild(endTimeDiv);
 
-    ganttDiv.appendChild(timeLabels);
+    // Add the time labels row to the Gantt chart container
+    ganttDiv.appendChild(timeLabelsRow);
 
     const resultsTable = document.getElementById('resultsTable');
     resultsTable.innerHTML = '';
