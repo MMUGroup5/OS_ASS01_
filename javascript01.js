@@ -323,20 +323,17 @@ function displayResults(preparedProcesses, ganttChart) {
         blockDiv.style.flex = block.execTime; // Proportional width based on execTime
         blockDiv.style.textAlign = 'center';
         blockDiv.style.position = 'relative';
-        blockDiv.style.padding = '10px 0';
+        blockDiv.style.padding = '20px 0';
         blockDiv.style.fontSize = '14px';
         blockDiv.style.borderLeft = '1px solid black';
         blockDiv.style.backgroundColor = '#f0f0f0';
 
-        // Add process label (e.g., P1) and burst time at the bottom
-        const label = document.createElement('div');
-        label.innerHTML = `<b>P${block.pid}</b><br>${block.execTime}`;
-        label.style.position = 'absolute';
-        label.style.bottom = '-20px';
-        label.style.width = '100%';
-        label.style.fontSize = '12px';
-        label.style.textAlign = 'center';
-        blockDiv.appendChild(label);
+         // Add process label (e.g., P1) and burst time below
+         blockDiv.innerHTML = `
+         <div style="position: absolute; bottom: -20px; width: 100%; font-size: 12px; text-align: center;">
+             <b>P${block.pid}</b> (${block.execTime})
+         </div>
+     `;
 
         // Append the block to the container
         ganttContainer.appendChild(blockDiv);
@@ -359,8 +356,11 @@ function displayResults(preparedProcesses, ganttChart) {
 
     timeMarkers.forEach((time, index) => {
         const timeLabel = document.createElement('div');
-        timeLabel.style.flex = index === 0 || index === timeMarkers.length - 1 ? '0' : '1';
-        timeLabel.style.textAlign = index === 0 ? 'left' : index === timeMarkers.length - 1 ? 'right' : 'center';
+        timeLabel.style.flex = '1';
+        timeLabel.style.textAlign = 'center';
+        timeLabel.style.fontWeight = 'bold';
+        if (index === 0) timeLabel.style.textAlign = 'left';
+        if (index === timeMarkers.length - 1) timeLabel.style.textAlign = 'right';
         timeLabel.innerText = time;
         timeMarkerDiv.appendChild(timeLabel);
     });
