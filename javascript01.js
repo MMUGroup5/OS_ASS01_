@@ -305,79 +305,23 @@ function runPriority(preparedProcesses) {
 
 function displayResults(preparedProcesses, ganttChart) {
     const ganttDiv = document.getElementById('ganttChart');
-    ganttDiv.innerHTML = ' ';
+    ganttDiv.innerHTML = '';
 
-    // Create a container for the Gantt Chart
-    const ganttContainer = document.createElement('div');
-    ganttContainer.style.display = 'flex';
-    ganttContainer.style.borderTop = '2px solid black';
-    ganttContainer.style.borderBottom = '2px solid black';
-    ganttContainer.style.position = 'relative';
-
-    const timeMarkers = []; // To store time markers for later display
-
-    // Generate Gantt Chart UI with labels for burst time
     ganttChart.forEach(block => {
-        const blockDiv = document.createElement('div');
-        blockDiv.style.borderLeft = '1px solid black';
-        blockDiv.style.flex = block.execTime; // Proportional width based on execTime
-        blockDiv.style.textAlign = 'center';
-        blockDiv.style.position = 'relative';
-        blockDiv.style.padding = '20px 0';
-        blockDiv.style.fontSize = '14px';
-        blockDiv.style.borderLeft = '1px solid black';
-        blockDiv.style.backgroundColor = '#f0f0f0';
-
-         // Add process label (e.g., P1) and burst time below
-         blockDiv.innerHTML = `
-         <div style="position: absolute; bottom: -20px; width: 100%; font-size: 12px; text-align: center;">
-             <b>P${block.pid}</b> (${block.execTime})
-         </div>
-     `;
-
-        // Append the block to the container
-        ganttContainer.appendChild(blockDiv);
-
-        // Store time markers
-        timeMarkers.push(block.startTime);
-        if (block === ganttChart[ganttChart.length - 1]) {
-            timeMarkers.push(block.endTime);
-        }
+        const div = document.createElement('div');
+        div.innerText = P${block.pid}(${block.execTime});
+        ganttDiv.appendChild(div);
     });
 
-    // Append the Gantt chart container
-    ganttDiv.appendChild(ganttContainer);
-
-    // Add time markers below the Gantt chart
-    const timeMarkerDiv = document.createElement('div');
-    timeMarkerDiv.style.display = 'flex';
-    timeMarkerDiv.style.marginTop = '10px';
-    timeMarkerDiv.style.fontSize = '12px';
-
-    timeMarkers.forEach((time, index) => {
-        const timeLabel = document.createElement('div');
-        timeLabel.style.flex = '1';
-        timeLabel.style.textAlign = 'center';
-        timeLabel.style.fontWeight = 'bold';
-        if (index === 0) timeLabel.style.textAlign = 'left';
-        if (index === timeMarkers.length - 1) timeLabel.style.textAlign = 'right';
-        timeLabel.innerText = time;
-        timeMarkerDiv.appendChild(timeLabel);
-    });
-
-    // Append the time markers
-    ganttDiv.appendChild(timeMarkerDiv);
-    
-    // Generate result table
     const resultsTable = document.getElementById('resultsTable');
-    resultsTable.innerHTML = ' ';
+    resultsTable.innerHTML = '';
 
     let totalTAT = 0;
     let totalWT = 0;
 
     preparedProcesses.forEach(p => {
         const row = resultsTable.insertRow();
-        row.insertCell(0).innerText = `P${p.pid}`;
+        row.insertCell(0).innerText = P${p.pid};
         row.insertCell(1).innerText = p.completionTime;
         row.insertCell(2).innerText = p.turnaroundTime;
         row.insertCell(3).innerText = p.waitingTime;
@@ -387,5 +331,6 @@ function displayResults(preparedProcesses, ganttChart) {
     });
 
     const averages = document.getElementById('averages');
-    averages.innerText = `Average Turnaround Time: ${(totalTAT / preparedProcesses.length).toFixed(2)}\nAverage Waiting Time: ${(totalWT / preparedProcesses.length).toFixed(2)}`;
+    averages.innerText = Average Turnaround Time: ${(totalTAT / preparedProcesses.length).toFixed(2)}\nAverage Waiting Time: ${(totalWT / preparedProcesses.length).toFixed(2)};
+}
 }
