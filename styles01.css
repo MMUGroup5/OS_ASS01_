@@ -28,17 +28,29 @@ td {
 
 .gantt {
     display: flex;
+    flex-direction: column; /* Stack rows vertically */
     margin-top: 20px;
     gap: 0px; /* Small gap between blocks */
     background-color: #f0f0f0; /* Background for the chart */
 }
 
-.gantt div div {
-    padding: 10px;
-    border: 1px solid black;
-    background-color: #ddd;
-    text-align: center;
-    flex-grow: 1;
+.gantt .blocks {
+    display: flex;
+    gap: 0; /* No gap between process blocks */
+}
+
+.gantt .time-labels {
+    display: flex;
+    gap: 0; /* Match block alignment */
+    position: relative;
+}
+
+.gantt .final-time {
+    text-align: right;
+    margin-top: 5px; /* Add space above the final time row */
+    display: flex;
+    justify-content: flex-end; /* Align to the right */
+    position: relative; /* Keep it relative to the Gantt container */
 }
 
 header {
