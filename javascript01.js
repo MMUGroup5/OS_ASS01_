@@ -315,7 +315,7 @@ function displayResults(preparedProcesses, ganttChart) {
 
     // Generate Gantt Chart UI with labels for burst time
     ganttChart.forEach(block => {
-        const div = document.createElement('div');
+        const blockDiv = document.createElement('div');
         blockDiv.style.borderLeft = '1px solid black';
         blockDiv.style.flex = block.execTime; // Proportional width based on execTime
         blockDiv.style.textAlign = 'center';
@@ -370,12 +370,6 @@ function displayResults(preparedProcesses, ganttChart) {
     // Append the Gantt chart and time markers to the container
     ganttDiv.appendChild(ganttContainer);
     ganttDiv.appendChild(timeMarkers);
-
-    // Calculate total burst time for each process
-    const totalBurstTimes = {};
-    ganttChart.forEach(block => {
-        totalBurstTimes[block.pid] = (totalBurstTimes[block.pid] || 0) + block.execTime;
-    });
     
     // Generate result table
     const resultsTable = document.getElementById('resultsTable');
