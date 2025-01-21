@@ -33,10 +33,6 @@ td {
     background-color: #f0f0f0; /* Background for the chart */
 }
 
-.gantt > div {
-    display: flex; /* Ensure each row (blocks/labels) aligns horizontally */
-}
-
 .gantt div div {
     padding: 10px;
     border: 1px solid black;
