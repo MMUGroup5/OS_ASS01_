@@ -45,12 +45,17 @@ td {
     position: relative;
 }
 
-.gantt .final-time {
+.gantt .time-labels div {
+    text-align: left;
+    flex-grow: 1; /* Ensure each time label aligns with its block */
+}
+
+.gantt .time-labels .final-time {
     text-align: right;
-    margin-top: 5px; /* Add space above the final time row */
-    display: flex;
-    justify-content: flex-end; /* Align to the right */
-    position: relative; /* Keep it relative to the Gantt container */
+    flex-grow: 0; /* Prevent stretching */
+    flex-shrink: 0; /* Keep width fixed */
+    width: 50px; /* Set a fixed width for the final time label */
+    margin-left: auto; /* Push it to the far right */
 }
 
 header {
