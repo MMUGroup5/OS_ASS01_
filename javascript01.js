@@ -305,13 +305,43 @@ function runPriority(preparedProcesses) {
 
 function displayResults(preparedProcesses, ganttChart) {
     const ganttDiv = document.getElementById('ganttChart');
-    ganttDiv.innerHTML = '';
+    ganttDiv.innerHTML = ''; // Clear previous Gantt chart
 
-    ganttChart.forEach(block => {
-        const div = document.createElement('div');
-        div.innerText = P${block.pid}(${block.execTime});
-        ganttDiv.appendChild(div);
+    // Create the Gantt chart blocks
+    ganttChart.forEach((block, index) => {
+        const processDiv = document.createElement('div');
+        processDiv.style.flex = block.execTime; // Relative width based on execution time
+        processDiv.style.border = '1px solid black';
+        processDiv.style.textAlign = 'center';
+        processDiv.style.padding = '5px';
+        processDiv.style.backgroundColor = '#ddd';
+        processDiv.innerHTML = `P${block.pid}`;
+        ganttDiv.appendChild(processDiv);
     });
+
+    // Add time labels at the bottom of the Gantt chart
+    const timeLabels = document.createElement('div');
+    timeLabels.style.display = 'flex';
+    timeLabels.style.marginTop = '10px';
+
+    ganttChart.forEach((block, index) => {
+        const timeDiv = document.createElement('div');
+        timeDiv.style.flex = block.execTime;
+        timeDiv.style.textAlign = index === ganttChart.length - 1 ? 'right' : 'left';
+        timeDiv.style.marginRight = '5px';
+        timeDiv.innerHTML = block.startTime;
+
+        timeLabels.appendChild(timeDiv);
+
+        if (index === ganttChart.length - 1) {
+            const endTimeDiv = document.createElement('div');
+            endTimeDiv.style.textAlign = 'right';
+            endTimeDiv.innerHTML = block.endTime;
+            timeLabels.appendChild(endTimeDiv);
+        }
+    });
+
+    ganttDiv.appendChild(timeLabels);
 
     const resultsTable = document.getElementById('resultsTable');
     resultsTable.innerHTML = '';
@@ -321,7 +351,7 @@ function displayResults(preparedProcesses, ganttChart) {
 
     preparedProcesses.forEach(p => {
         const row = resultsTable.insertRow();
-        row.insertCell(0).innerText = P${p.pid};
+        row.insertCell(0).innerText = `P${p.pid}`;
         row.insertCell(1).innerText = p.completionTime;
         row.insertCell(2).innerText = p.turnaroundTime;
         row.insertCell(3).innerText = p.waitingTime;
@@ -331,5 +361,5 @@ function displayResults(preparedProcesses, ganttChart) {
     });
 
     const averages = document.getElementById('averages');
-    averages.innerText = Average Turnaround Time: ${(totalTAT / preparedProcesses.length).toFixed(2)}\nAverage Waiting Time: ${(totalWT / preparedProcesses.length).toFixed(2)};
+    averages.innerText = `Average Turnaround Time: ${(totalTAT / preparedProcesses.length).toFixed(2)}\nAverage Waiting Time: ${(totalWT / preparedProcesses.length).toFixed(2)}`;
 }
