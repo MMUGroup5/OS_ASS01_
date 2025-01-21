@@ -312,6 +312,9 @@ function displayResults(preparedProcesses, ganttChart) {
     ganttContainer.style.display = 'flex';
     ganttContainer.style.borderTop = '2px solid black';
     ganttContainer.style.borderBottom = '2px solid black';
+    ganttContainer.style.position = 'relative';
+
+    const timeMarkers = []; // To store time markers for later display
 
     // Generate Gantt Chart UI with labels for burst time
     ganttChart.forEach(block => {
@@ -322,54 +325,48 @@ function displayResults(preparedProcesses, ganttChart) {
         blockDiv.style.position = 'relative';
         blockDiv.style.padding = '10px 0';
         blockDiv.style.fontSize = '14px';
+        blockDiv.style.borderLeft = '1px solid black';
         blockDiv.style.backgroundColor = '#f0f0f0';
 
-        // Add process label (e.g., P1)
-        const processLabel = document.createElement('span');
-        processLabel.innerText = `P${block.pid}`;
-        processLabel.style.display = 'block';
-        processLabel.style.fontWeight = 'bold';
-        blockDiv.appendChild(processLabel);
+        // Add process label (e.g., P1) and burst time at the bottom
+        const label = document.createElement('div');
+        label.innerHTML = `<b>P${block.pid}</b><br>${block.execTime}`;
+        label.style.position = 'absolute';
+        label.style.bottom = '-20px';
+        label.style.width = '100%';
+        label.style.fontSize = '12px';
+        label.style.textAlign = 'center';
+        blockDiv.appendChild(label);
 
-        // Add burst time
-        const burstLabel = document.createElement('span');
-        burstLabel.innerText = `${block.execTime}`;
-        burstLabel.style.position = 'absolute';
-        burstLabel.style.bottom = '5px';
-        burstLabel.style.left = '50%';
-        burstLabel.style.transform = 'translateX(-50%)';
-        burstLabel.style.fontSize = '12px';
-        blockDiv.appendChild(burstLabel);
-
+        // Append the block to the container
         ganttContainer.appendChild(blockDiv);
-    });
 
-    // Add time markers
-    const timeMarkers = document.createElement('div');
-    timeMarkers.style.display = 'flex';
-    timeMarkers.style.marginTop = '5px';
-    timeMarkers.style.fontSize = '12px';
-
-    ganttChart.forEach((block, index) => {
-        // Add start time marker
-        const timeMarker = document.createElement('div');
-        timeMarker.style.flex = block.execTime; // Align with the corresponding block
-        timeMarker.style.textAlign = index === 0 ? 'left' : 'center';
-        timeMarker.innerText = block.startTime;
-        timeMarkers.appendChild(timeMarker);
-
-        // Add the last end time marker
-        if (index === ganttChart.length - 1) {
-            const endTimeMarker = document.createElement('div');
-            endTimeMarker.style.textAlign = 'right';
-            endTimeMarker.innerText = block.endTime;
-            timeMarkers.appendChild(endTimeMarker);
+        // Store time markers
+        timeMarkers.push(block.startTime);
+        if (block === ganttChart[ganttChart.length - 1]) {
+            timeMarkers.push(block.endTime);
         }
     });
 
-    // Append the Gantt chart and time markers to the container
+    // Append the Gantt chart container
     ganttDiv.appendChild(ganttContainer);
-    ganttDiv.appendChild(timeMarkers);
+
+    // Add time markers below the Gantt chart
+    const timeMarkerDiv = document.createElement('div');
+    timeMarkerDiv.style.display = 'flex';
+    timeMarkerDiv.style.marginTop = '10px';
+    timeMarkerDiv.style.fontSize = '12px';
+
+    timeMarkers.forEach((time, index) => {
+        const timeLabel = document.createElement('div');
+        timeLabel.style.flex = index === 0 || index === timeMarkers.length - 1 ? '0' : '1';
+        timeLabel.style.textAlign = index === 0 ? 'left' : index === timeMarkers.length - 1 ? 'right' : 'center';
+        timeLabel.innerText = time;
+        timeMarkerDiv.appendChild(timeLabel);
+    });
+
+    // Append the time markers
+    ganttDiv.appendChild(timeMarkerDiv);
     
     // Generate result table
     const resultsTable = document.getElementById('resultsTable');
