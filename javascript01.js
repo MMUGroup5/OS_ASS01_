@@ -352,7 +352,7 @@ function displayResults(preparedProcesses, ganttChart) {
     // Create a separate row for the final time label (placed in the gaps)
     const endTimeRow = document.createElement('div');
     endTimeRow.style.display = 'flex';
-    endTimeRow.style.marginTop = '10px'; // Add some space from the blocks
+    endTimeRow.style.marginTop = '5px'; // Add some space from the blocks
     endTimeRow.style.justifyContent = 'flex-end'; // Align to the right
 
     const endTimeDiv = document.createElement('div');
