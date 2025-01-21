@@ -333,4 +333,3 @@ function displayResults(preparedProcesses, ganttChart) {
     const averages = document.getElementById('averages');
     averages.innerText = Average Turnaround Time: ${(totalTAT / preparedProcesses.length).toFixed(2)}\nAverage Waiting Time: ${(totalWT / preparedProcesses.length).toFixed(2)};
 }
-}
