@@ -304,6 +304,7 @@ function runPriority(preparedProcesses) {
 }
 
 function displayResults(preparedProcesses, ganttChart) {
+    // Clear the Gantt chart container
     const ganttDiv = document.getElementById('ganttChart');
     ganttDiv.innerHTML = ''; // Clear previous Gantt chart
 
@@ -329,29 +330,42 @@ function displayResults(preparedProcesses, ganttChart) {
     // Create a row for the time labels
     const timeLabelsRow = document.createElement('div');
     timeLabelsRow.style.display = 'flex';
+    timeLabelsRow.style.position = 'relative'; // Position labels within the same container
 
     // Add the starting time label (0)
     let currentTime = 0; // Start from 0
     ganttChart.forEach((block) => {
-         // Time label for the start of each block
-         const timeDiv = document.createElement('div');
-         timeDiv.style.flex = block.execTime; // Matches the width of the corresponding block
-         timeDiv.style.textAlign = 'left'; // Align left for proper label placement
-         timeDiv.innerHTML = currentTime;
-         timeLabelsRow.appendChild(timeDiv);
- 
-         // Update current time to the end time of this block
-         currentTime += block.execTime;
-     });
+        // Time label for the start of each block
+        const timeDiv = document.createElement('div');
+        timeDiv.style.flex = block.execTime; // Matches the width of the corresponding block
+        timeDiv.style.textAlign = 'left'; // Align left for proper label placement
+        timeDiv.innerHTML = currentTime;
+        timeLabelsRow.appendChild(timeDiv);
 
-    // Add the last time label (final end time)
-    const endTimeDiv = document.createElement('div');
-    endTimeDiv.style.textAlign = 'right';
-    endTimeDiv.innerHTML = currentTime;
-    timeLabelsRow.appendChild(endTimeDiv);
+        // Update current time to the end time of this block
+        currentTime += block.execTime;
+    });
 
     // Add the time labels row to the Gantt chart container
     ganttDiv.appendChild(timeLabelsRow);
+
+    // Create a separate row for the final time label (placed in the gaps)
+    const endTimeRow = document.createElement('div');
+    endTimeRow.style.display = 'flex';
+    endTimeRow.style.marginTop = '10px'; // Add some space from the blocks
+    endTimeRow.style.justifyContent = 'flex-end'; // Align to the right
+
+    const endTimeDiv = document.createElement('div');
+    endTimeDiv.style.position = 'relative';
+    endTimeDiv.style.textAlign = 'center'; // Align label to the center of its position
+    endTimeDiv.style.flex = '0'; // No gap
+    endTimeDiv.innerHTML = currentTime;
+
+    // Append the final time label
+    endTimeRow.appendChild(endTimeDiv);
+
+    // Add the end time row to the Gantt chart container
+    ganttDiv.appendChild(endTimeRow);
 
     const resultsTable = document.getElementById('resultsTable');
     resultsTable.innerHTML = '';
