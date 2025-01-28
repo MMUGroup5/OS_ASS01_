@@ -261,52 +261,47 @@ function runPriority(preparedProcesses) {
     let currentTime = 0;
     let completed = 0;
     let ganttChart = [];
-    let currentProcess = null;
+    let readyQueue = [];
 
     while (completed < preparedProcesses.length) {
-        // If no process is currently executing, select the next one
-        if (!currentProcess) {
-            // Filter processes that have arrived and are not yet completed
-            let readyQueue = preparedProcesses.filter(
-                p => p.arrivalTime <= currentTime && p.remainingTime > 0
-            );
+        // Filter processes that have arrived and are not yet completed
+        readyQueue = preparedProcesses.filter(p => p.arrivalTime <= currentTime && p.remainingTime > 0);
 
-            // Sort ready processes by priority (ascending), breaking ties by arrival time
-            readyQueue.sort((a, b) => a.priority - b.priority || a.arrivalTime - b.arrivalTime);
-
-            // Select the process with the highest priority
-            currentProcess = readyQueue[0];
-        }
-
-        if (currentProcess) {
-            // Execute the process completely
-            let execTime = currentProcess.remainingTime;
-            ganttChart.push({
-                pid: currentProcess.pid,
-                execTime,
-                startTime: currentTime,
-                endTime: currentTime + execTime
-            });
-            currentTime += execTime;
-
-            // Update process details
-            currentProcess.remainingTime = 0;
-            currentProcess.completionTime = currentTime;
-            currentProcess.turnaroundTime = currentProcess.completionTime - currentProcess.arrivalTime;
-            currentProcess.waitingTime = currentProcess.turnaroundTime - currentProcess.burstTime;
-
-            // Increment the count of completed processes and reset the current process
-            completed++;
-            currentProcess = null;
-        } else {
-            // If no process is ready, increment time
+        if (readyQueue.length === 0) {
+            // If no processes are ready, increment time
             currentTime++;
+            continue;
         }
+
+        // Sort ready processes by priority (ascending), breaking ties by arrival time
+        readyQueue.sort((a, b) => a.priority - b.priority || a.arrivalTime - b.arrivalTime);
+
+        // Select the process with the highest priority
+        let process = readyQueue[0];
+
+        // Execute the process completely
+        let execTime = process.remainingTime;
+        ganttChart.push({ 
+            pid: process.pid, 
+            execTime, 
+            startTime: currentTime, 
+            endTime: currentTime + execTime 
+        });
+        currentTime += execTime;
+
+        // Update process details
+        process.remainingTime = 0;
+        process.completionTime = currentTime;
+        process.turnaroundTime = process.completionTime - process.arrivalTime;
+        process.waitingTime = process.turnaroundTime - process.burstTime;
+
+        // Increment the count of completed processes
+        completed++;
     }
 
-    return ganttChart;
+    // Display results
+    displayResults(preparedProcesses, ganttChart);
 }
-
 
 function displayResults(preparedProcesses, ganttChart) {
     // Clear the Gantt chart container
