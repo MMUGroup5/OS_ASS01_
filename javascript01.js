@@ -13,23 +13,37 @@ function toggleQuantumInput() {
     }
 }
 
+/**
+ * Adds a new process row to the process table when the "Add Process" button is clicked.
+ * Each process row contains three input fields for arrival time, burst time, and priority.
+ * The process ID is assigned incrementally from 0.
+ */
 function addProcess() {
+    // Get the process table element
     const table = document.getElementById('processTable');
+
+    // Insert a new row at the end of the table
     const row = table.insertRow();
 
+    // Assign a unique process ID to the new process
     const pid = processes.length;
+
+    // Create input fields for arrival time, burst time, and priority
     const arrivalInput = document.createElement('input');
     const burstInput = document.createElement('input');
     const priorityInput = document.createElement('input');
 
+    // Set the input types and minimum values
     arrivalInput.type = burstInput.type = priorityInput.type = 'number';
     arrivalInput.min = burstInput.min = priorityInput.min = '0';
 
-    row.insertCell(0).innerText = `P${pid}`;
-    row.insertCell(1).appendChild(arrivalInput);
-    row.insertCell(2).appendChild(burstInput);
-    row.insertCell(3).appendChild(priorityInput);
+    // Create table cells and add the input fields to them
+    row.insertCell(0).innerText = `P${pid}`; // Process ID
+    row.insertCell(1).appendChild(arrivalInput); // Arrival time
+    row.insertCell(2).appendChild(burstInput); // Burst time
+    row.insertCell(3).appendChild(priorityInput); // Priority
 
+    // Add the new process to the global 'processes' array
     processes.push({
         pid,
         arrivalInput,
@@ -76,12 +90,24 @@ function runScheduling() {
     (window[`run${algorithm.charAt(0).toUpperCase()}${algorithm.slice(1)}`] || (() => alert('Unknown algorithm')))(preparedProcesses, quantum);
 }
 
+/**
+ * Runs the Round Robin (RR) CPU scheduling algorithm with the prepared processes and time quantum.
+ * @param {Object[]} preparedProcesses - An array of objects with process details (pid, arrivalTime, burstTime, priority, remainingTime, completionTime, turnaroundTime, waitingTime).
+ * @param {number} quantum - The time quantum value for the RR algorithm.
+ */
 function runRoundRobin(preparedProcesses, quantum) {
-    let currentTime = 0;
-    let queue = [];
-    let ganttChart = [];
+    let currentTime = 0; // Current simulation time
+    let queue = []; // Processes waiting to be executed
+    let ganttChart = []; // Gantt Chart data (for visualization)
     let remainingProcesses = [...preparedProcesses];  // Create a copy to track unfinished processes
-    
+
+    /**
+     * Loop until all processes have completed their execution.
+     * At each iteration, check if any new processes have arrived, and add them to the queue.
+     * If no processes are ready, increment time and continue.
+     * Otherwise, select the next process from the queue, execute it for the quantum time,
+     * and update process times and metrics.
+     */
     while (remainingProcesses.some(p => p.remainingTime > 0)) {
         // Add newly arrived processes to queue
         remainingProcesses.forEach(p => {
@@ -90,6 +116,7 @@ function runRoundRobin(preparedProcesses, quantum) {
             }
         });
 
+        // If no processes are ready, increment time and continue
         if (queue.length === 0) {
             currentTime++;
             continue;
@@ -97,23 +124,31 @@ function runRoundRobin(preparedProcesses, quantum) {
 
         // Get next process from queue
         let currentProcess = queue.shift();
-        
-        // Calculate execution time for this quantum
+        /**
+         * Calculate the execution time for this quantum.
+         * If the process has remaining time less than or equal to the quantum, execute it completely.
+         * Otherwise, execute it for the quantum time.
+         */
         let execTime = Math.min(quantum, currentProcess.remainingTime);
-        
-        // Update Gantt chart
+        /**
+         * Update Gantt chart with the executed process.
+         * Create a new object with the process ID, execution time, start time, and end time.
+         */
         ganttChart.push({
             pid: currentProcess.pid,
             execTime: execTime,
             startTime: currentTime,
             endTime: currentTime + execTime
         });
-        
-        // Update process times
+        /**
+         * Update process times and metrics.
+         * Increment the current time by the execution time.
+         * Decrement the remaining time of the current process by the execution time.
+         * If the process is complete, calculate its metrics (completion time, turnaround time, waiting time).
+         */
         currentTime += execTime;
         currentProcess.remainingTime -= execTime;
         
-        // If process is complete, calculate its metrics
         if (currentProcess.remainingTime === 0) {
             currentProcess.completionTime = currentTime;
             currentProcess.turnaroundTime = currentProcess.completionTime - currentProcess.arrivalTime;
