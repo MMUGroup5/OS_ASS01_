@@ -14,6 +14,6 @@ The system is developed with a responsive, user-friendly interface that allows u
 <hr>
 
 <p align="center">
-  <img src="./result/result.mov" width=600><br/>
-  <i>Result</i>
+  <img src="./result/result.gif" width=600><br/>
+  <i></i>
 </p>
