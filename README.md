@@ -12,3 +12,8 @@ The system is developed with a responsive, user-friendly interface that allows u
 ### Front Page 
 ![Screenshot (51)](https://github.com/user-attachments/assets/048bd769-f5c2-4d74-af9d-72faeda7848e)
 <hr>
+
+<p align="center">
+  <img src="./result/result.gif" width=600><br/>
+  <i></i>
+</p>
